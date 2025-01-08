@@ -5,7 +5,7 @@
 
 // Definitions
 #define LED_PIN 5     // GPIO Pin where LED strip is connected
-#define BUTTON_PIN 7	//GPIO Pin where button is connected
+#define BUTTON_PIN 7	// D7 Pin where button is connected
 #define NUM_LEDS 100
 #define MIC_PIN A0    // Analog pin connected to microphone
 
