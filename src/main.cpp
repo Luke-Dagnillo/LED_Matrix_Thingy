@@ -68,8 +68,10 @@ void loop() {
 
 void displayDefaultPattern() { 
 	// Rainbow Pattern
+	int rainbowSpeed = 1; // Lower values = faster, higher values = slower
+
 	for (int i = 0; i < strip.numPixels(); i++) {
-		int pixelHue = (i * 256 / strip.numPixels()) + (millis() / 10);
+		int pixelHue = (i * 256 / strip.numPixels()) + (millis() / rainbowSpeed);
 		strip.setPixelColor(i, strip.ColorHSV(pixelHue));
 	}
 
