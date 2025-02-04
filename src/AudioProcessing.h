@@ -12,7 +12,7 @@ public:
 
 private:
     uint8_t _micPin;          // Pin connected to micorphone
-    int readMicorphone();     // raw ADC reading from mic
+    int readMicrophone();     // raw ADC reading from mic
 };
 
 

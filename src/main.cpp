@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 #include <math.h>
+#include "AudioProcessing.h"
 
 
 // Definitions
-#define LED_PIN 5     // GPIO Pin where LED strip is connected
+#define LED_PIN 5     // GPIO Pin where LED strip is connected  (D2)
 #define BUTTON_PIN 7	// D7 Pin where button is connected
 #define NUM_LEDS 90
 #define MIC_PIN A0    // Analog pin connected to microphone
@@ -26,15 +27,22 @@ unsigned long debounceDelay = 50; // 50ms debounce delay
 bool buttonState = HIGH;
 bool lastButtonState = HIGH;
 
+// Audio Processing setup
+AudioProcessing audio(MIC_PIN);
+
+
 
 void setup() {
-	// put your setup code here, to run once:
+	// // put your setup code here, to run once:
 	delay(2000); // Wait 2 seconds for serial monitor stabilization
-	pinMode(BUTTON_PIN, INPUT_PULLUP);
-	strip.begin();
-	strip.show();
-	Serial.begin(9600);
-	Serial.println("Starting...");
+	// pinMode(BUTTON_PIN, INPUT_PULLUP);
+	// strip.begin();
+	// strip.show();
+	// Serial.begin(9600);
+	// Serial.println("Starting...");
+
+	audio.begin();
+    Serial.begin(9600); 
 }
 
 void loop() {
@@ -61,6 +69,14 @@ void loop() {
 	else if (currentMode == MIC_MODE) {
 		displayMicPattern();
 	}
+
+
+
+	// int amplitude = audio.getAmplitude();
+    // Serial.println(amplitude);
+
+
+	delay(50);
 }
 
 
@@ -79,12 +95,27 @@ void displayDefaultPattern() {
 }
 
 void displayMicPattern(){
-	int micValue = analogRead(MIC_PIN);
-	int brightness = map(micValue, 0, 1023, 0, 255);
+	int amplitude = audio.getAmplitude();  // get sound amplitude
 
-	for (int i = 0; i < strip.numPixels(); i++) {
-		strip.setPixelColor(i, strip.Color(brightness, 0, 255 - brightness));
+	// clear the matrix
+
+	// define the color gradient based on intensity
+	uint32_t colors[] = {
+		strip.Color(0, 0, 255),   // Blue (low)
+        strip.Color(0, 255, 255), // Cyan
+        strip.Color(0, 255, 0),   // Green
+        strip.Color(255, 255, 0), // Yellow
+        strip.Color(255, 0, 0)    // Red (high)
+	};
+
+	// map amplitude to 9 rows of the 9x10 matrix
+	for (int col = 0; col < 10; col++) {
+		for (int row = 0; row < amplitude; row++) {  // light up to "amplitude height"
+			int ledIndex = (row * 10) + col; // convert (row, col) to LED index
+			uint32_t color = colors[min(row / 2, 4)];  // choose color gradient
+			strip.setPixelColor(ledIndex, color);
+		}
 	}
 
-	strip.show();
+	strip.show();  // Update LED strip
 }
